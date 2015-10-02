@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+    <title>Maths Quiz</title>
+
+    <link href="lib/ionic/css/ionic.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+
+    <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
+    <link href="css/ionic.app.css" rel="stylesheet">
+    -->
+
+    <!-- ionic/angularjs js -->
+    <script src="lib/ionic/js/ionic.bundle.js"></script>
+
+    <!-- cordova script (this will be a 404 during development) -->
+    <script src="cordova.js"></script>
+
+    <!-- your app's js -->
+    <script src="js/app.js"></script>
+  </head>
+
+  <body ng-app="MathsQuiz">
+    <ion-view ng-controller="MainCtrl">
+      <ion-header-bar class="bar-positive">
+        <h1 class="title">Maths Quiz</h1>
+        <div class="buttons">
+          <button class="button button-clear" ng-show="problems">
+            {{problems.time}}
+          </button>
+        </div>
+      </ion-header-bar>
+
+      <ion-content>
+        <!-- Inputs -->
+        <div class="card list" ng-show="!problems">
+          <ion-item class="item-divider">Options</ion-item>
+          <ion-item class="item-input">
+            <ion-label class="input-label">Questions</ion-label>
+            <input type="number" ng-model="params.count" min="1" />
+          </ion-item>
+          <ion-item class="item-input">
+            <ion-label class="input-label">Min number</ion-label>
+            <input type="number" ng-model="params.min" min="{{params.allowNegative ? '' : 1}}" />
+          </ion-item>
+          <ion-item class="item-input">
+            <ion-label class="input-label">Max number</ion-label>
+            <input type="number" ng-model="params.max" min="{{params.allowNegative ? '' : 1}}" />
+          </ion-item>
+          <ion-item class="item-checkbox">
+            <label class="checkbox">
+              <input type="checkbox" ng-model="params.allowNegative"/>
+            </label>
+            Allow negative answers
+          </ion-item>
+          <ion-item class="item-checkbox">
+            <label class="checkbox">
+              <input type="checkbox" ng-model="params.doAdd"/>
+            </label>
+            Addition
+          </ion-item>
+          <ion-item class="item-checkbox">
+            <label class="checkbox">
+              <input type="checkbox" ng-model="params.doSubtract"/>
+            </label>
+            Subtraction
+          </ion-item>
+          <ion-item class="item-checkbox">
+            <label class="checkbox">
+              <input type="checkbox" ng-model="params.doMultiply"/>
+            </label>
+            Multiplication
+          </ion-item>
+  <!--        <ion-item class="item-checkbox">
+            <label class="checkbox">
+              <input type="checkbox" ng-model="params.doDivide"/>
+            </label>
+            Division
+          </ion-item>-->
+        </div>
+
+        <!-- Entry -->
+        <div class="card list"
+             ng-show="problems && !problems.complete">
+
+          <ion-item class="item-divider">
+            Question {{problems.index + 1}} of {{problems.list.length}}
+          </ion-item>
+
+          <div ng-repeat="item in problems.list"
+               ng-show="$index === problems.index"
+               >
+  <!--          <ion-item class="">
+              {{item.n1}}
+              {{item.operator}}
+              {{item.n2}}
+            </ion-item>
+  -->
+            <ion-item class="item-input">
+              <ion-label class="input-label">
+                <div class="problem">
+                  {{item.n1}}<br>
+                  {{item.operator}}  {{item.n2}}
+                </div>
+              </ion-label>
+              <input type="number" ng-model="item.answer" placeholder="Your answer" autofocus/>
+            </ion-item>
+          </div>
+        </div>
+
+        <div class="card list"
+             ng-show="problems && problems.complete">
+
+          <ion-item class="item-divider">
+            Answers
+            ({{getCorrect()}} of {{problems.list.length}} correct)
+          </ion-item>
+
+          <ion-item class="item-input item-icon-right"
+                    ng-repeat="item in problems.list"
+                    ng-click="retry($index, true)">
+            <ion-label class="input-label">
+              {{item.n1}}
+              {{item.operator}}
+              {{item.n2}}
+            </ion-label>
+            <span>= {{item.answer !== null ? item.answer : "Not given"}}</span>
+            <i class="icon ion-checkmark-round" ng-show="item.answer === item.solution" style="color: green;"></i>
+            <i class="icon ion-close-round" ng-show="item.answer !== item.solution" style="color: red;"></i>
+          </ion-item>
+        </div>
+
+      </ion-content>
+
+      <ion-footer-bar>
+        <div class="button-bar" ng-show="!problems">
+          <button class="button button-positive" ng-click="start()" ng-disabled="!canStart()">
+            Start
+          </button>
+        </div>
+        <div class="button-bar" ng-show="problems && !problems.complete">
+          <button class="button" ng-click="previous()" ng-disabled="problems.index === 0">
+            Back
+          </button>
+          <button class="button button-positive"
+                  ng-click="next()"
+                  ng-show="(problems.index < (problems.list.length - 1)) && !problems.return">
+            Next
+          </button>
+          <button class="button button-positive"
+                  ng-click="finish()"
+                  ng-show="(problems.index === (problems.list.length - 1)) || problems.return">
+            Finish
+          </button>
+        </div>
+        <div class="button-bar" ng-show="problems && problems.complete">
+          <button class="button" ng-click="retry()">
+            Retry problems
+          </button>
+          <button class="button button-positive" ng-click="clear()">
+            Start new
+          </button>
+        </div>
+      </ion-footer-bar>
+    </ion-view>
+  </body>
+</html>
