@@ -13,7 +13,7 @@ angular.module('MathsQuiz', ['ionic'])
   });
 })
 
-.controller("MainCtrl", function($interval, $scope,
+.controller("MainCtrl", function($interval, $scope, $timeout,
                                  $ionicScrollDelegate) {
 
   $scope.params = {
@@ -42,6 +42,12 @@ angular.module('MathsQuiz', ['ionic'])
   $scope.finish = function() {
     $ionicScrollDelegate.scrollTop(false);
     $scope.problems.complete = true;
+  };
+
+  $scope.focusInput = function() {
+    $timeout(function() {
+      document.getElementById("problem-input-" + $scope.problems.index).focus();
+    });
   };
 
   $scope.getCorrect = function() {
@@ -85,11 +91,13 @@ angular.module('MathsQuiz', ['ionic'])
   $scope.next = function() {
     $ionicScrollDelegate.scrollTop(false);
     $scope.problems.index++;
+    $scope.focusInput();
   };
 
   $scope.previous = function() {
     $ionicScrollDelegate.scrollTop(false);
     $scope.problems.index--;
+    $scope.focusInput();
   }
 
   $scope.retry = function(index, ret) {
@@ -102,6 +110,7 @@ angular.module('MathsQuiz', ['ionic'])
         item.answer = null;
       });
     }
+    $scope.focusInput();
   };
 
   $scope.start = function() {
@@ -181,6 +190,7 @@ angular.module('MathsQuiz', ['ionic'])
         $scope.problems.timer++;
 
     }, 1000);
+    $scope.focusInput();
   };
 
   $scope.random = function(min, max) {
