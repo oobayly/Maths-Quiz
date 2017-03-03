@@ -47,7 +47,7 @@ angular.module('MathsQuiz', ['ionic'])
   $scope.focusInput = function() {
     $timeout(function() {
       document.getElementById("problem-input-" + $scope.problems.index).focus();
-    });
+    }, 150);
   };
 
   $scope.getCorrect = function() {
